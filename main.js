@@ -1,37 +1,41 @@
+
+
+function hexagonCoordinates(centreX, centreY, radius, isHorizontal){
+	isHorizontal = typeof isHorizontal !== 'undefined' ? isHorizontal : true; //Defaults to true
+	var points = [];
+
+	for (var i = 0; i < 6; i++) {
+		var x = centreX + radius * Math.cos(i * (Math.PI * 2 / 6) + (isHorizontal ? 0 : Math.PI / 2));
+		var y = centreY + radius * Math.sin(i * (Math.PI * 2 / 6) + (isHorizontal ? 0 : Math.PI / 2));
+		points.push({x : x, y: y});
+	}
+	return points;
+}
+
 //Get the chart
 var chart = d3.select(".chart");
 
-var points = [
-{x: 95, y: 13},
-{x: 73, y: 63},
-{x: 45, y: 13},
-{x: 45, y: 63},
-{x: 15, y: 23},
-];
+function generateHexGrid(rows, columns, xStart, yStart){
+	var hexes = [];
+	
+	for (var k = 0; k < rows; k++) {
 
+		for (var i = 0; i < columns; i++) {
+			
+			var x = xStart + (40 * Math.cos(Math.PI *2 / 6) + 40) * i;
+			var y = yStart + (40 * Math.sin(Math.PI *2 / 6)) * 2 * k + ((i % 2 === 0) ? 0 : (40 * Math.sin(Math.PI *2 / 6)));
+			hexes.push(hexagonCoordinates(x, y, 40));
+		}
+	}
+	return hexes;
+}
 
-//Set it's width
-chart.attr("width", 800);
-chart.attr("height", 450);
+chart.selectAll("polygon").data(generateHexGrid(50, 100, 0, 0)).enter().append("polygon")
+	.attr("points", function(d){
+		var ps = "";
+		for (var i = 0; i < 6; i++) {
+			ps += d[i].x + "," + d[i].y + " ";
+		}
+		return ps;
+	});
 
-//Draw some circles
-chart.selectAll("circle").data(points).enter().append("circle")
-		.attr("r", 20)
-		.attr("cy", function(p){return p.y * 5;})
-		.attr("cx", function(p){return p.x * 5;});
-
-
-//Draw lines between the circles
-point_pairs = [];
-for (var i = 0; i < points.length; i++) {
-	for (var j = 0; j < points.length; j++) {
-		if(points[i] !== points[j])
-			point_pairs.push([points[i], points[j]])
-	};
-};
-
-chart.selectAll("line").data(point_pairs).enter().append("line")
-	.attr("x1", function(pp){return pp[0].x * 5;})
-	.attr("y1", function(pp){return pp[0].y * 5;})
-	.attr("x2", function(pp){return pp[1].x * 5;})
-	.attr("y2", function(pp){return pp[1].y * 5;});
