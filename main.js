@@ -37,5 +37,11 @@ chart.selectAll("polygon").data(generateHexGrid(50, 100, 0, 0)).enter().append("
 			ps += d[i].x + "," + d[i].y + " ";
 		}
 		return ps;
+	})
+	.on("mouseover", function(){
+		d3.select(this).transition().duration(100).style("fill", "steelblue").style("stroke-width", 2);
+	})
+	.on("mouseout", function(){
+		d3.select(this).transition().duration(700).style("fill", "black").style("stroke-width", 1);
 	});
 
